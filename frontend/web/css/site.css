@@ -113,8 +113,31 @@ a.desc:after {
 .nav > li > form > button.logout:focus,
 .nav > li > form > button.logout:hover {
     text-decoration: none;
+    color:blue;
 }
 
 .nav > li > form > button.logout:focus {
     outline: none;
+}
+
+.navbar-inverse
+{
+    background:ghostwhite;
+}
+
+    .navbar-inverse .navbar-nav li a
+    {
+        color:rebeccapurple;
+    }
+        .navbar-inverse .navbar-nav li a:hover
+        {
+            color:red;
+        }
+.navbar-inverse .navbar-brand:hover
+{
+    color:red;
+}
+.navbar-inverse .navbar-brand
+{
+    color:blue;
 }

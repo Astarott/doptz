@@ -39,12 +39,14 @@ class ResendVerificationEmailForm extends Model
      */
     public function sendEmail()
     {
-        $user = User::findOne([
+        $user = User::findOne
+        ([
             'email' => $this->email,
             'status' => User::STATUS_INACTIVE
         ]);
 
-        if ($user === null) {
+        if ($user === null)
+        {
             return false;
         }
 

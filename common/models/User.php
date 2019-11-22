@@ -21,6 +21,12 @@ use yii\web\IdentityInterface;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ *
+ * @property string $city
+ * @property string $avatar
+ * @property string $phone
+ * @property integer $creationDate
+ *
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -53,14 +59,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+       //     ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function findIdentity($id)
     {
         return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
@@ -80,9 +84,11 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $username
      * @return static|null
      */
-    public static function findByUsername($username)
+    public static function findByEmail($email)
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        // Написали свою авторизацию
+        return static::findOne(['email' => $email, 'status' => self::STATUS_ACTIVE]);
+        //////return User::find()->where(['username'=>$username])->one();
     }
 
     /**
@@ -165,6 +171,8 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function validatePassword($password)
     {
+        //Написали свою функцию
+        //return ($this->password == $password) ? true : false;
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
 
