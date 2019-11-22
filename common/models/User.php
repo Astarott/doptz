@@ -25,6 +25,7 @@ use yii\web\IdentityInterface;
  * @property string $city
  * @property string $avatar
  * @property string $phone
+ * @property string $about
  * @property integer $creationDate
  *
  */

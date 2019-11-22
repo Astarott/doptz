@@ -6,6 +6,7 @@ namespace frontend\controllers;
 
 use common\models\LoginForm;
 use Couchbase\UserSettings;
+use frontend\models\Declaration;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\ResetPasswordForm;
@@ -16,21 +17,45 @@ use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use common\models\User;
+use yii\web\NotFoundHttpException;
 
 class AuthController extends Controller
 {
     //Личный кабинет
-    public function actionUserSettings()
+
+    public function actionView($id)
     {
-        $model = new User();
-       // $model =  Yii::$app->user;
-        if ($model->load(Yii::$app->request->post()))
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+        {
+            if ($model->validate())
+            {
+                vardump($model);die;
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+        }
+        return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+    public function actionUserSettings($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save())
         {
             if ($model->validate()) {
-                // form inputs are valid, do something here
+                // return $this->redirect(['view', 'id' => $model->id]);
                 return $this->goHome();
             }
         }
+
         return $this->render('UserSettings', [
             'model' => $model,
         ]);
@@ -45,10 +70,12 @@ class AuthController extends Controller
         }
 
         $model = new LoginForm();
+
         if ($model->load(Yii::$app->request->post()) && $model->login())
         {
-            return $this->redirect('http://doptz.local/auth/user-settings');
-            //return $this->goBack();
+           // return $this->redirect(['view','id' =>$model->get_current_user()];
+            return $this->redirect(['view', 'id' => yii::$app->user->id]);
+           // return $this->goBack();
         } else {
             $model->password = '';
 
@@ -149,4 +176,23 @@ class AuthController extends Controller
             'model' => $model
         ]);
     }
+    /**
+     * Finds the Declaration model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Declaration the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findModel($id)
+    {
+        if (($model = User::findOne($id)) !== null) {
+            return $model;
+        }
+        throw new NotFoundHttpException('The requested page does not exist.');
+    }
 }
+function vardump($var) {
+    echo '<pre>';
+    var_dump($var);
+    echo '</pre>';
+};
