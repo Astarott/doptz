@@ -1,9 +1,11 @@
 <?php
 namespace frontend\models;
 
+use common\models\LoginForm;
 use Yii;
 use yii\base\Model;
 use common\models\User;
+use function frontend\controllers\vardump;
 
 /**
  * Signup form
@@ -13,7 +15,7 @@ class SignupForm extends Model
     //public $username;
     public $email;
     public $password;
-
+    public $rememberMe = false;
 
     /**
      * {@inheritdoc}
@@ -45,6 +47,7 @@ class SignupForm extends Model
     public function signup()
     {
         if (!$this->validate()) {
+//            vardump('die');die;
             return null;
         }
         
@@ -56,11 +59,16 @@ class SignupForm extends Model
 
         $user->generateEmailVerificationToken();
 
-        //Добавим немного своих полей
+        return $user->save() && Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
 
+          //Залогиним пользователя
+//        $login = new LoginForm();
+//        $login->password = $this->password;
+//        $login->email = $this->email;
+//        $login->rememberMe = false;
+//        $login->login();
+//        vardump($login->login());die;
 
-
-        return $user->save();
      //   return $user->save() && $this->sendEmail($user);
     }
 

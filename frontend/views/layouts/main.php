@@ -47,6 +47,9 @@ AppAsset::register($this);
        // $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
         $menuItems[] = ['label' => 'Войти', 'url' => ['/auth/login']];
     } else {
+        $menuItems[] = ['label' => 'Добавить объявление', 'url' => ['/declaration/create']];
+        $menuItems[] = ['label' => 'Мои объявления', 'url' => ['/declaration/mine']];
+        $menuItems[] = ['label' => 'Личный кабинет', 'url' => ['/auth/view']];
         $menuItems[] = '<li>'
             . Html::beginForm(['/auth/logout'], 'post')
             . Html::submitButton(

@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\Declaration */
 
-$this->title = 'Create Declaration';
-$this->params['breadcrumbs'][] = ['label' => 'Declarations', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Добавить объявление';
+//$this->params['breadcrumbs'][] = ['label' => 'Declarations', 'url' => ['index']];
+//$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="declaration-create">
 

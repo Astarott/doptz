@@ -1,66 +1,80 @@
 <?php
 
-
 namespace frontend\controllers;
 
-
 use common\models\LoginForm;
-use Couchbase\UserSettings;
-use frontend\models\Declaration;
 use frontend\models\PasswordResetRequestForm;
+use frontend\models\Photo;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
 use frontend\models\VerifyEmailForm;
-use yii;
+use Yii;
+use common\models\User;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use common\models\User;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
+/**
+ * AuthController implements the CRUD actions for User model.
+ */
 class AuthController extends Controller
 {
-    //Личный кабинет
 
-    public function actionView($id)
+    public function actionSetImage()
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save())
+        $model = new Photo;
+
+        if ($model->load(Yii::$app->request->post()))
         {
-            if ($model->validate())
+            $user = $this->findModel(yii::$app->user->id);
+            $file = UploadedFile::getInstance($model,'path');
+
+          //  vardump($model->uploadFile($file));die;
+
+            if ($user->saveImage($model->uploadFile($file,$user->avatar)))
             {
-                vardump($model);die;
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['view', 'id'=>$user->id]);
             }
         }
+        return $this->render('image',['model'=>$model]);
+    }
+
+    //Личный кабинет
+    public function actionView()
+    {
+        return $this->render('view', [
+            'model' => $this->findModel(yii::$app->user->id),
+        ]);
+    }
+
+    public function actionUpdate()
+    {
+        $id = Yii::$app->user->id;
+        $model = $this->findModel($id);
+        //vardump($ds);die;
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+//            vardump($model->validate());die;
+            $request = Yii::$app->request->post('User');
+            $model->username = $request['username'];
+            $model->city = $request['city'];
+            $model->about = $request['about'];
+            $model->phone = $request['phone'];
+            $model->save();
+              //Вручную лезем в БД и изменяем поля.
+//            Yii::$app->db->createCommand()->update('user', ['username' => $request['username']], 'id =:id',array(':id' =>$id))->execute();
+//            Yii::$app->db->createCommand()->update('user', ['city' => $request['city']], 'id =:id',array(':id' =>$id))->execute();
+//            Yii::$app->db->createCommand()->update('user', ['phone' => $request['phone']], 'id =:id',array(':id' =>$id))->execute();
+//            Yii::$app->db->createCommand()->update('user', ['about' => $request['about']], 'id =:id',array(':id' =>$id))->execute();
+            return $this->redirect('view');
+        }
+
         return $this->render('update', [
             'model' => $model,
         ]);
     }
-    public function actionUserSettings($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save())
-        {
-            if ($model->validate()) {
-                // return $this->redirect(['view', 'id' => $model->id]);
-                return $this->goHome();
-            }
-        }
-
-        return $this->render('UserSettings', [
-            'model' => $model,
-        ]);
-    }
-
 
     //Авторизация
     public function actionLogin()
@@ -73,9 +87,9 @@ class AuthController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->login())
         {
-           // return $this->redirect(['view','id' =>$model->get_current_user()];
+            // return $this->redirect(['view','id' =>$model->get_current_user()];
             return $this->redirect(['view', 'id' => yii::$app->user->id]);
-           // return $this->goBack();
+            // return $this->goBack();
         } else {
             $model->password = '';
 
@@ -95,10 +109,10 @@ class AuthController extends Controller
     public function actionSignup()
     {
         $model = new SignupForm();
-        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
-
+        if ($model->load(Yii::$app->request->post()) && $model->signup())
+        {
             //Yii::$app->session->setFlash('success', 'Thank you for registration. Please check your inbox for verification email.');
-            return $this->goHome();
+            return $this->redirect(['view', 'id' => yii::$app->user->id]);
         }
 
         return $this->render('signup', [
@@ -180,7 +194,7 @@ class AuthController extends Controller
      * Finds the Declaration model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Declaration the loaded model
+     * @return User
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)

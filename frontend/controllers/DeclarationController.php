@@ -33,12 +33,12 @@ class DeclarationController extends Controller
      * Lists all Declaration models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionMine()
     {
         $searchModel = new DeclarationSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('index', [
+        return $this->render('mine', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -66,10 +66,11 @@ class DeclarationController extends Controller
     {
         $model = new Declaration();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        $model->user_id = Yii::$app->user->id;
+        if ($model->load(Yii::$app->request->post()) && $model->save())
+        {
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
         return $this->render('create', [
             'model' => $model,
         ]);
@@ -87,6 +88,7 @@ class DeclarationController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            vardump($model);die;
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -125,3 +127,8 @@ class DeclarationController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 }
+function vardump($var) {
+    echo '<pre>';
+    var_dump($var);
+    echo '</pre>';
+};

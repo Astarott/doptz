@@ -38,6 +38,7 @@ class Declaration extends \yii\db\ActiveRecord
             [['total', 'viewed', 'user_id'], 'integer'],
             [['title', 'description', 'city', 'category', 'status'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['photos'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png,jpg,jpeg'],
         ];
     }
 
@@ -52,10 +53,17 @@ class Declaration extends \yii\db\ActiveRecord
             'total' => 'Total',
             'category' => 'Category',
             'status' => 'Status',
-            'viewed' => 'Viewed',
+//            'viewed' => 'Viewed',
+            'viewed' => 'Photo',
             'user_id' => 'User ID',
+            //'photos' => 'Photos',
         ];
     }
+
+//    public function getPhotos()
+//    {
+//        return
+//    }
 
     public function getUser()
     {
